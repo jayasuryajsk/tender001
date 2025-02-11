@@ -16,24 +16,24 @@ interface SuggestedActionsProps {
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: 'What are the advantages',
-      label: 'of using Next.js?',
-      action: 'What are the advantages of using Next.js?',
+      title: 'Help me write',
+      label: 'a compelling executive summary',
+      action: 'Help me write a compelling executive summary that highlights our key capabilities and competitive advantages',
     },
     {
-      title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
-      action: `Write code to demonstrate djikstra's algorithm`,
+      title: 'Review and enhance',
+      label: 'my tender response',
+      action: 'Review and enhance my tender response to maximize scoring potential and ensure compliance with all requirements',
     },
     {
-      title: 'Help me write an essay',
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
+      title: 'Create a template for',
+      label: 'capability statement',
+      action: 'Create a professional capability statement template that showcases our experience, certifications, and past successes',
     },
     {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
+      title: 'Analyze tender',
+      label: 'requirements and scoring criteria',
+      action: 'Help me analyze the tender requirements and scoring criteria to identify our competitive advantages and areas needing attention',
     },
   ];
 
