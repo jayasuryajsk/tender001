@@ -150,7 +150,7 @@ function PureEditor({
     <div className={cn("mx-auto", {
       "px-8 sm:px-16 md:px-24 lg:px-32 xl:px-48": !containerRef.current?.closest('.document-preview')
     })}>
-      <div className="relative prose dark:prose-invert max-w-none" ref={containerRef} />
+      <div className="relative prose prose-stone max-w-none leading-relaxed" ref={containerRef} />
     </div>
   );
 }
