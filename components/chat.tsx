@@ -4,6 +4,7 @@ import type { Attachment, Message } from 'ai';
 import { useChat } from 'ai/react';
 import { useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
+import { cn } from '@/lib/utils';
 
 import { ChatHeader } from '@/components/chat-header';
 import type { Vote } from '@/lib/db/schema';
@@ -80,7 +81,10 @@ export function Chat({
           isBlockVisible={isBlockVisible}
         />
 
-        <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
+        <form className={cn(
+          "flex mx-auto bg-background gap-2 w-full md:max-w-3xl",
+          messages.length > 0 && "px-4 pb-4 md:pb-6"
+        )}>
           {!isReadonly && (
             <MultimodalInput
               chatId={id}

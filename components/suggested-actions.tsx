@@ -2,18 +2,15 @@
 
 import { motion } from 'framer-motion';
 import { Button } from './ui/button';
-import { ChatRequestOptions, CreateMessage, Message } from 'ai';
 import { memo } from 'react';
 
 interface SuggestedActionsProps {
   chatId: string;
-  append: (
-    message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions,
-  ) => Promise<string | null | undefined>;
+  setInput: (value: string) => void;
+  textareaRef?: React.RefObject<HTMLTextAreaElement>;
 }
 
-function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
+function PureSuggestedActions({ chatId, setInput, textareaRef }: SuggestedActionsProps) {
   const suggestedActions = [
     {
       title: 'Help me write',
@@ -38,7 +35,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   ];
 
   return (
-    <div className="grid sm:grid-cols-2 gap-2 w-full">
+    <div className="grid sm:grid-cols-2 gap-2 w-full max-w-2xl">
       {suggestedActions.map((suggestedAction, index) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -50,18 +47,22 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         >
           <Button
             variant="ghost"
-            onClick={async () => {
-              window.history.replaceState({}, '', `/chat/${chatId}`);
-
-              append({
-                role: 'user',
-                content: suggestedAction.action,
-              });
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setInput(suggestedAction.action);
+              
+              // Focus and adjust textarea height
+              if (textareaRef?.current) {
+                textareaRef.current.style.height = 'auto';
+                textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
+                textareaRef.current.focus();
+              }
             }}
-            className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
+            className="text-left border rounded-xl px-3 py-2.5 text-sm flex flex-col w-full h-auto justify-start items-start hover:bg-muted/50"
           >
-            <span className="font-medium">{suggestedAction.title}</span>
-            <span className="text-muted-foreground">
+            <span className="font-medium text-sm">{suggestedAction.title}</span>
+            <span className="text-muted-foreground text-xs">
               {suggestedAction.label}
             </span>
           </Button>
