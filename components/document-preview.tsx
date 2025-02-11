@@ -124,15 +124,9 @@ const LoadingSkeleton = ({ blockKind }: { blockKind: BlockKind }) => (
         <FullscreenIcon />
       </div>
     </div>
-    {blockKind === 'image' ? (
-      <div className="overflow-y-scroll border rounded-b-2xl bg-muted border-t-0">
-        <div className="animate-pulse h-[257px] bg-muted-foreground/20 w-full" />
-      </div>
-    ) : (
-      <div className="overflow-y-scroll border rounded-b-2xl p-8 pt-4 bg-muted border-t-0">
-        <InlineDocumentSkeleton />
-      </div>
-    )}
+    <div className="overflow-y-scroll border rounded-b-2xl p-8 pt-4 bg-muted border-t-0">
+      <InlineDocumentSkeleton />
+    </div>
   </div>
 );
 
@@ -208,8 +202,6 @@ const PureDocumentHeader = ({
           <div className="animate-spin">
             <LoaderIcon />
           </div>
-        ) : kind === 'image' ? (
-          <FileIcon />
         ) : (
           <FileIcon />
         )}

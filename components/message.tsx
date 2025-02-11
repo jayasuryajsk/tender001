@@ -3,7 +3,7 @@
 import type { ChatRequestOptions, Message } from 'ai';
 import cx from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 
 import type { Vote } from '@/lib/db/schema';
 
@@ -24,7 +24,6 @@ import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
-import { MessageReasoning } from './message-reasoning';
 
 const PurePreviewMessage = ({
   chatId,
@@ -89,14 +88,7 @@ const PurePreviewMessage = ({
               </div>
             )}
 
-            {message.reasoning && (
-              <MessageReasoning
-                isLoading={isLoading}
-                reasoning={message.reasoning}
-              />
-            )}
-
-            {(message.content || message.reasoning) && mode === 'view' && (
+            {message.content && mode === 'view' && (
               <div className="flex flex-row gap-2 items-start">
                 {message.role === 'user' && !isReadonly && (
                   <Tooltip>
@@ -225,8 +217,6 @@ export const PreviewMessage = memo(
   PurePreviewMessage,
   (prevProps, nextProps) => {
     if (prevProps.isLoading !== nextProps.isLoading) return false;
-    if (prevProps.message.reasoning !== nextProps.message.reasoning)
-      return false;
     if (prevProps.message.content !== nextProps.message.content) return false;
     if (
       !equal(

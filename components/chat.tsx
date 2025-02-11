@@ -42,8 +42,7 @@ export function Chat({
   } = useChat({
     id,
     body: { 
-      id, 
-      selectedChatModel: 'gemini',
+      id,
       experimental_attachments: attachments
     },
     initialMessages,

@@ -20,16 +20,7 @@ export const PreviewAttachment = ({
         isPDF ? "bg-red-50 dark:bg-red-900/20 ring-1 ring-red-500/20" : "bg-muted"
       )}>
         {contentType ? (
-          contentType.startsWith('image') ? (
-            // NOTE: it is recommended to use next/image for images
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={url}
-              src={url}
-              alt={name ?? 'An image attachment'}
-              className="rounded-md size-full object-cover"
-            />
-          ) : isPDF ? (
+          isPDF ? (
             <>
               <div className="flex items-center justify-center text-red-500/70">
                 <FileIcon size={24} />

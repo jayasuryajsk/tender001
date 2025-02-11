@@ -106,7 +106,6 @@ export function convertToUIMessages(
     }
 
     let textContent = '';
-    let reasoning: string | undefined = undefined;
     const toolInvocations: Array<ToolInvocation> = [];
 
     if (typeof message.content === 'string') {
@@ -122,8 +121,6 @@ export function convertToUIMessages(
             toolName: content.toolName,
             args: content.args,
           });
-        } else if (content.type === 'reasoning') {
-          reasoning = content.reasoning;
         }
       }
     }
@@ -132,62 +129,12 @@ export function convertToUIMessages(
       id: message.id,
       role: message.role as Message['role'],
       content: textContent,
-      reasoning,
       toolInvocations,
       experimental_attachments: message.experimental_attachments as Array<Attachment> | undefined
     });
 
     return chatMessages;
   }, []);
-}
-
-export function sanitizeResponseMessages({
-  messages,
-  reasoning,
-}: {
-  messages: Array<ResponseMessage>;
-  reasoning: string | undefined;
-}): Array<ResponseMessage> {
-  const toolResultIds: Array<string> = [];
-
-  for (const message of messages) {
-    if (message.role === 'tool') {
-      for (const content of message.content) {
-        if (content.type === 'tool-result') {
-          toolResultIds.push(content.toolCallId);
-        }
-      }
-    }
-  }
-
-  const messagesBySanitizedContent = messages.map((message) => {
-    if (message.role !== 'assistant') return message;
-
-    if (typeof message.content === 'string') return message;
-
-    const sanitizedContent = message.content.filter((content) =>
-      content.type === 'tool-call'
-        ? toolResultIds.includes(content.toolCallId)
-        : content.type === 'text'
-          ? content.text.length > 0
-          : true,
-    );
-
-    if (reasoning) {
-      // @ts-expect-error: reasoning message parts in sdk is wip
-      sanitizedContent.push({ type: 'reasoning', reasoning });
-    }
-
-    return {
-      ...message,
-      content: sanitizedContent,
-      experimental_attachments: message.experimental_attachments
-    } as ResponseMessage;
-  });
-
-  return messagesBySanitizedContent.filter(
-    (message) => message.content.length > 0,
-  );
 }
 
 export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {

@@ -11,15 +11,13 @@ import {
 import { cn } from '@/lib/utils';
 import { useBlockSelector } from '@/hooks/use-block';
 
-export interface ConsoleOutputContent {
-  type: 'text' | 'image';
-  value: string;
-}
-
 export interface ConsoleOutput {
   id: string;
   status: 'in_progress' | 'loading_packages' | 'completed' | 'failed';
-  contents: Array<ConsoleOutputContent>;
+  contents: Array<{
+    type: 'text';
+    value: string;
+  }>;
 }
 
 interface ConsoleProps {
@@ -147,24 +145,14 @@ export function Console({ consoleOutputs, setConsoleOutputs }: ConsoleProps) {
                 </div>
               ) : (
                 <div className="text-zinc-900 w-full flex flex-col gap-2 overflow-x-scroll">
-                  {consoleOutput.contents.map((content, index) =>
-                    content.type === 'image' ? (
-                      <picture key={`${consoleOutput.id}-${index}`}>
-                        <img
-                          src={content.value}
-                          alt="output"
-                          className="rounded-md max-w-[600px] w-full"
-                        />
-                      </picture>
-                    ) : (
-                      <div
-                        key={`${consoleOutput.id}-${index}`}
-                        className="whitespace-pre-line break-words w-full"
-                      >
-                        {content.value}
-                      </div>
-                    ),
-                  )}
+                  {consoleOutput.contents.map((content, index) => (
+                    <div
+                      key={`${consoleOutput.id}-${index}`}
+                      className="whitespace-pre-line break-words w-full"
+                    >
+                      {content.value}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

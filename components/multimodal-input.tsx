@@ -216,8 +216,7 @@ function PureMultimodalInput({
           {attachments.map((attachment) => (
             <PreviewAttachment 
               key={attachment.url} 
-              attachment={attachment} 
-              isPDF={attachment.contentType === 'application/pdf'}
+              attachment={attachment}
             />
           ))}
 

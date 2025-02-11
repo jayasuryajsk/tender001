@@ -1,6 +1,10 @@
 import { Block } from '@/components/create-block';
 import { CodeEditor } from '@/components/code-editor';
+import { DiffView } from '@/components/diffview';
+import { DocumentSkeleton } from '@/components/document-skeleton';
+import { Console, ConsoleOutput } from '@/components/console';
 import {
+  ClockRewind,
   CopyIcon,
   LogsIcon,
   MessageIcon,
@@ -10,11 +14,6 @@ import {
 } from '@/components/icons';
 import { toast } from 'sonner';
 import { generateUUID } from '@/lib/utils';
-import {
-  Console,
-  ConsoleOutput,
-  ConsoleOutputContent,
-} from '@/components/console';
 
 const OUTPUT_HANDLERS = {
   matplotlib: `
@@ -118,7 +117,10 @@ export const codeBlock = new Block<'code', Metadata>({
       description: 'Execute code',
       onClick: async ({ content, setMetadata }) => {
         const runId = generateUUID();
-        const outputContent: Array<ConsoleOutputContent> = [];
+        const outputContent: Array<{
+          type: 'text';
+          value: string;
+        }> = [];
 
         setMetadata((metadata) => ({
           ...metadata,
@@ -141,9 +143,7 @@ export const codeBlock = new Block<'code', Metadata>({
           currentPyodideInstance.setStdout({
             batched: (output: string) => {
               outputContent.push({
-                type: output.startsWith('data:image/png;base64')
-                  ? 'image'
-                  : 'text',
+                type: 'text',
                 value: output,
               });
             },

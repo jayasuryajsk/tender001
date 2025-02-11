@@ -17,7 +17,6 @@ import {
 import {
   generateUUID,
   getMostRecentUserMessage,
-  sanitizeResponseMessages,
 } from '@/lib/utils';
 
 import { generateTitleFromUserMessage } from '../../actions';
@@ -32,12 +31,15 @@ interface ExtendedMessage extends Message {
   experimental_attachments?: Array<Attachment>;
 }
 
+type ResponseMessage = Message & {
+  experimental_attachments?: Array<Attachment>;
+}
+
 export async function POST(request: Request) {
   const {
     id,
     messages,
-    selectedChatModel,
-  }: { id: string; messages: Array<ExtendedMessage>; selectedChatModel: string } =
+  }: { id: string; messages: Array<ExtendedMessage> } =
     await request.json();
 
   const session = await auth();
@@ -73,19 +75,16 @@ export async function POST(request: Request) {
   return createDataStreamResponse({
     execute: (dataStream) => {
       const result = streamText({
-        model: myProvider.languageModel(selectedChatModel),
-        system: systemPrompt({ selectedChatModel }),
+        model: myProvider.languageModel('gemini'),
+        system: systemPrompt({ selectedChatModel: 'gemini' }),
         messages: messages as Message[],
         maxSteps: 5,
-        experimental_activeTools:
-          selectedChatModel === 'chat-model-reasoning'
-            ? []
-            : [
-                'getWeather',
-                'createDocument',
-                'updateDocument',
-                'requestSuggestions',
-              ],
+        experimental_activeTools: [
+          'getWeather',
+          'createDocument',
+          'updateDocument',
+          'requestSuggestions',
+        ],
         experimental_transform: smoothStream({ chunking: 'word' }),
         experimental_generateMessageId: generateUUID,
         tools: {
@@ -97,22 +96,17 @@ export async function POST(request: Request) {
             dataStream,
           }),
         },
-        onFinish: async ({ response, reasoning }) => {
+        onFinish: async ({ response }) => {
           if (session.user?.id) {
             try {
-              const sanitizedResponseMessages = sanitizeResponseMessages({
-                messages: response.messages,
-                reasoning,
-              });
-
               await saveMessages({
-                messages: sanitizedResponseMessages.map((message) => ({
+                messages: response.messages.map((message) => ({
                   id: message.id,
                   chatId: id,
                   role: message.role,
                   content: message.content,
                   createdAt: new Date(),
-                  experimental_attachments: message.experimental_attachments || null
+                  experimental_attachments: (message as ExtendedMessage).experimental_attachments || null
                 })),
               });
             } catch (error) {
@@ -126,12 +120,11 @@ export async function POST(request: Request) {
         },
       });
 
-      result.mergeIntoDataStream(dataStream, {
-        sendReasoning: true,
-      });
+      result.mergeIntoDataStream(dataStream);
     },
-    onError: () => {
-      return 'Oops, an error occured!';
+    onError: (error: Error | unknown) => {
+      console.error('Chat API Error:', error);
+      return `Error: ${error instanceof Error ? error.message : 'An unknown error occurred'}`;
     },
   });
 }
